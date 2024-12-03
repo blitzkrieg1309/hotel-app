@@ -1,0 +1,17 @@
+<h2>Reservation</h2>
+
+<ul *ngIf="reservations.length; else noReservation">
+  <li *ngFor="let i of reservations">
+    id : {{ i.id }} <br />
+    Guest : {{ i.guestName }} <br />
+    Email : {{ i.guestEmail }} <br />
+    Room Number : {{ i.roomNumber }} <br />
+    Check In : {{ i.checkInDate }} <br />
+    Check Out : {{ i.checkOutDate }} <br />
+    <button (click)="deleteReservation(i.id)">Delete</button>
+  </li>
+</ul>
+
+<ng-template #noReservation>
+  <p>No reservation available</p>
+</ng-template>
