@@ -19,27 +19,38 @@ export class ReservationService {
 
   // Add
   addReservation(reservation: Reservation): void {
-    reservation.id = Date.now();
+    reservation.id = Date.now().toString();
     this.reservations.push(reservation);
     localStorage.setItem('saveReservation', JSON.stringify(this.reservations));
   }
 
   // get reservation by ID
-  getReservation(id: number): Reservation | undefined {
+  getReservation(id: string): Reservation | undefined {
     return this.reservations.find((res) => res.id === id);
   }
 
-  // update
-  updateReservation(updatedReservation: Reservation): void {
-    let index = this.reservations.findIndex(
-      (res) => res.id === updatedReservation.id
-    );
-    this.reservations[index] = updatedReservation;
-    localStorage.setItem('saveReservation', JSON.stringify(this.reservations));
+  updateReservation(id: string, updatedReservation: Reservation): void {
+    let index = this.reservations.findIndex((res) => res.id === id);
+
+    if (index !== -1) {
+      // Pastikan ID lama tetap dipertahankan
+      updatedReservation.id = id;
+
+      // Perbarui data pada array
+      this.reservations[index] = updatedReservation;
+
+      // Simpan kembali ke localStorage
+      localStorage.setItem(
+        'saveReservation',
+        JSON.stringify(this.reservations)
+      );
+    } else {
+      console.error(`Reservation with ID ${id} not found.`);
+    }
   }
 
   // delete
-  deleteReservation(id: number): void {
+  deleteReservation(id: string): void {
     let index = this.reservations.findIndex((res) => res.id === id);
     if (index !== -1) {
       this.reservations.splice(index, 1);
