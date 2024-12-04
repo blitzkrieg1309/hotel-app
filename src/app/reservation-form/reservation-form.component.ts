@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validator, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReservationService } from '../reservation/reservation.service';
 import { Reservation } from '../models/reservation';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -23,6 +23,7 @@ export class ReservationFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.reservationForm = this.fromBuilder.group({
+      id: [''], // Tambahkan ID di form
       checkInDate: ['', Validators.required],
       checkOutDate: ['', Validators.required],
       guestName: ['', Validators.required],
@@ -34,9 +35,9 @@ export class ReservationFormComponent implements OnInit {
     let id = this.activatedRoute.snapshot.paramMap.get('id');
     // jika punya id tampilkan data sesuai id
     if (id) {
-      let reservation = this.reservationService.getReservation(id);
-
-      if (reservation) this.reservationForm.patchValue(reservation);
+      this.reservationService.getReservation(id).subscribe((reservation) => {
+        if (reservation) this.reservationForm.patchValue(reservation);
+      });
     }
   }
 
@@ -49,11 +50,16 @@ export class ReservationFormComponent implements OnInit {
 
       if (id) {
         // update
-        // reservation.id = id;
-        this.reservationService.updateReservation(id, reservation);
+        this.reservationService
+          .updateReservation(id, reservation)
+          .subscribe(() => {
+            console.log('request update process');
+          });
       } else {
         // new
-        this.reservationService.addReservation(reservation);
+        this.reservationService.addReservation(reservation).subscribe(() => {
+          console.log('request add process');
+        });
       }
 
       this.router.navigate(['/list']);
